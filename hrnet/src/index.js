@@ -10,9 +10,20 @@ import Home from "./Containers";
 
 import List from "./Containers/List";
 
+
+import store from './Containers/store.js'
+import { Provider } from 'react-redux'
+import { PersistGate } from 'redux-persist/integration/react';
+import { persistStore } from 'redux-persist';
+
+let persistor = persistStore(store);
+
 export default function App() {
 
   return (
+
+        <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
 
         <BrowserRouter>
          <Routes>
@@ -20,6 +31,9 @@ export default function App() {
             <Route path={'/list'} element={<List/>} />
           </Routes>
         </BrowserRouter>
+
+        </PersistGate>
+        </Provider>
   );
 }
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);

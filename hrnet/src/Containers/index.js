@@ -2,8 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { generatePath } from "react-router";
 import { BrowserRouter, Routes, Route, Link, useHistory, useLocation, Redirect } from "react-router-dom";
+import { useSelector, useDispatch } from 'react-redux'
+import { storeToken, clearToken } from './Sessions/userSession'
 
-import saveEmployee from "./functions/saveEmployee";
 /**
  * Code to show the home page
  * @return  {React element}             Containers that shows the home page   
@@ -11,6 +12,55 @@ import saveEmployee from "./functions/saveEmployee";
 
 
 function Home() {
+const dispatch = useDispatch()
+ 
+ function Closemodal() {
+
+   const zipCode = document.getElementById('confirmation');
+
+   zipCode.style.display = 'none';
+
+
+}
+
+function modal() {
+
+   const zipCode = document.getElementById('confirmation');
+
+   zipCode.style.display = 'block';
+}
+
+
+ function SaveEmployee(){
+    const firstName = document.getElementById('first-name');
+    const lastName = document.getElementById('last-name');
+    const dateOfBirth = document.getElementById('date-of-birth');
+    const startDate = document.getElementById('start-date');
+    const department = document.getElementById('department');
+    const street = document.getElementById('street');
+    const city = document.getElementById('city');
+    const state = document.getElementById('state');
+    const zipCode = document.getElementById('zip-code');
+
+
+    const employees = JSON.parse(localStorage.getItem('employees')) || [];
+    const employee = {
+        firstName: firstName.value,
+        lastName: lastName.value,
+        dateOfBirth: dateOfBirth.value,
+        startDate: startDate.value,
+        department: department.value,
+        street: street.value,
+        city: city.value,
+        state: state.value,
+        zipCode: zipCode.value
+    };
+
+    employees.push(employee);
+    dispatch(storeToken(JSON.stringify(employees)));
+    localStorage.setItem('employees', JSON.stringify(employees));
+    modal()
+}
 
   return (
    <>
@@ -61,15 +111,19 @@ function Home() {
                 </select>
             </form>
 
-            <button onClick={saveEmployee}>Save</button>
+            <button onClick={SaveEmployee}>Save</button>
         </div>
-        <div id="confirmation" className="modal">Employee Created!</div>
+        <div id="confirmation" className="modal">
+         <div className="modal-content">
+    <span className="close" onClick={Closemodal} id="close">&times;</span>
+    <p>Employee Created!</p>
+  </div>
+  </div>
 
    </>
 
   );
 }
-
 
 
 export default Home;
