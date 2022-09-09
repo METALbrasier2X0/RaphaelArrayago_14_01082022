@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { generatePath } from "react-router";
 import { BrowserRouter, Routes, Route, Link, useHistory, useLocation, Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux'
-import { storeToken, clearToken } from './Sessions/userSession'
+import { storeToken, clearToken,  selectToken  } from './Sessions/userSession'
 
 /**
  * Code to show the home page
@@ -13,7 +13,8 @@ import { storeToken, clearToken } from './Sessions/userSession'
 
 function Home() {
 const dispatch = useDispatch()
- 
+let employees = useSelector(selectToken);
+
  function Closemodal() {
 
    const zipCode = document.getElementById('confirmation');
@@ -43,7 +44,6 @@ function modal() {
     const zipCode = document.getElementById('zip-code');
 
 
-    const employees = JSON.parse(localStorage.getItem('employees')) || [];
     const employee = {
         firstName: firstName.value,
         lastName: lastName.value,
@@ -56,9 +56,15 @@ function modal() {
         zipCode: zipCode.value
     };
 
+
+
+    if (employees == '') {
+        employees = [employee]
+    } else {
+    employees = JSON.parse(employees || []);
     employees.push(employee);
+    }
     dispatch(storeToken(JSON.stringify(employees)));
-    localStorage.setItem('employees', JSON.stringify(employees));
     modal()
 }
 

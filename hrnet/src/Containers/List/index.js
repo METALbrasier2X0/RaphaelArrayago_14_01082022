@@ -4,23 +4,30 @@ import { generatePath } from "react-router";
 import ReactDataTable from 'data-table-reactjs';
 import { BrowserRouter, Routes, Route, Link, useHistory, useLocation, Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux'
-import { storeToken, clearToken, askToken } from '../Sessions/userSession'
+import { storeToken, clearToken, selectToken } from '../Sessions/userSession'
 
 /**
  * Code to show the employee list
  * @return  {React element}             Containers that shows the list of employees  
  */
 
-function clear(){
-  localStorage.removeItem('employees')
-}
+
 
 function List() {
 
     const dispatch = useDispatch()
-    console.log(askToken())
-    const employees = JSON.parse(localStorage.getItem('employees'));
+    const List = useSelector(selectToken);
+    let employees = List;
 
+      function Clear(){
+
+      dispatch(clearToken());
+}     
+
+    if (employees == '') {
+    } else {
+    employees = JSON.parse(employees);
+    }
     const columns = [
   {
     name: 'First Name',
@@ -112,7 +119,7 @@ const MyComponent = () => (
      <div id="employee-div" className="container">
             <h1>Current Employees</h1>
             <MyComponent/>
-            <a href="/">Home</a> <a href="#" onClick={clear}> Clear</a>
+            <a href="/">Home</a> <a href="#" onClick={Clear}> Clear</a>
         </div>
 
    </>

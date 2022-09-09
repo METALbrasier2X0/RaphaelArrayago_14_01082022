@@ -16,8 +16,8 @@ export const tokenSlice = createSlice({
       console.log (state.value);
     },
     clearToken: (state) => {
-      state.value = null;
-      console.log (state.value);
+      state = {value: ['']};
+      return state
     },
     askToken: (state) => {
       return state.value;
