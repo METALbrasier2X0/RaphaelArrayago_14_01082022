@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { useState } from "react";
 import ReactDOM from 'react-dom';
 import { generatePath } from "react-router";
 import { BrowserRouter, Routes, Route, Link, useHistory, useLocation, Redirect } from "react-router-dom";
+import Modal from 'modal-react-raphael' 
+import Open from 'modal-react-raphael/dist/Open.js' 
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { useSelector, useDispatch } from 'react-redux'
+import Dropdown from "./Dropdown"
+
 import { storeToken, clearToken,  selectToken  } from './Sessions/userSession'
 
 /**
@@ -15,21 +21,6 @@ function Home() {
 const dispatch = useDispatch()
 let employees = useSelector(selectToken);
 
- function Closemodal() {
-
-   const zipCode = document.getElementById('confirmation');
-
-   zipCode.style.display = 'none';
-
-
-}
-
-function modal() {
-
-   const zipCode = document.getElementById('confirmation');
-
-   zipCode.style.display = 'block';
-}
 
 
  function SaveEmployee(){
@@ -58,15 +49,21 @@ function modal() {
 
 
 
-    if (employees == '') {
+    if (employees == '' || employees == null || employees == undefined) {
         employees = [employee]
     } else {
     employees = JSON.parse(employees || []);
     employees.push(employee);
     }
     dispatch(storeToken(JSON.stringify(employees)));
-    modal()
+    Open()
 }
+
+
+
+
+const [startDate, setStartDate] = useState(new Date());
+const [birthDate, setBirthDate] = useState(new Date());
 
   return (
    <>
@@ -86,10 +83,10 @@ function modal() {
                 <input id="last-name"></input>
 
                 <label htmlFor="date-of-birth">Date of Birth</label>
-                <input id="date-of-birth"></input>
+                <DatePicker id="date-of-birth" peekNextMonth showMonthDropdown showYearDropdown dropdownMode="select" selected={birthDate} onChange={(date:Date) => setBirthDate(date)} />
 
                 <label htmlFor="start-date">Start Date</label>
-                <input id="start-date"></input>
+                <DatePicker id="start-date" peekNextMonth showMonthDropdown showYearDropdown dropdownMode="select" selected={startDate}  onChange={(date:Date) => setStartDate(date)} />
 
                 <fieldset className="address">
                     <legend>Address</legend>
@@ -99,9 +96,8 @@ function modal() {
 
                     <label htmlFor="city">City</label>
                     <input id="city"></input>
-
-                    <label htmlFor="state">State</label>
-                    <select name="state" id="state"> </select>
+                    
+                    <Dropdown> </Dropdown>
 
                     <label htmlFor="zip-code">Zip Code</label>
                     <input id="zip-code"></input>
@@ -119,17 +115,11 @@ function modal() {
 
             <button onClick={SaveEmployee}>Save</button>
         </div>
-        <div id="confirmation" className="modal">
-         <div className="modal-content">
-    <span className="close" onClick={Closemodal} id="close">&times;</span>
-    <p>Employee Created!</p>
-  </div>
-  </div>
+        <Modal Content={[<p> Employee Created! </p>]} showClose={true} outsideClose={false}/>
 
    </>
 
   );
 }
-
 
 export default Home;

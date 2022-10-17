@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { generatePath } from "react-router";
-import ReactDataTable from 'data-table-reactjs';
+import DataTable from 'react-data-table-component';
 import { BrowserRouter, Routes, Route, Link, useHistory, useLocation, Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux'
 import { storeToken, clearToken, selectToken } from '../Sessions/userSession'
@@ -32,45 +32,54 @@ function List() {
   {
     name: 'First Name',
     selector: 'column1',
+    sortable: true,
   },
   {
     name: 'Last Name',
     selector: 'column2',
+    sortable: true,
   },
   {
     name: 'Start Date',
     selector: 'column3',
+    sortable: true,
   }, 
   {
     name: 'Department',
     selector: 'column4',
+    sortable: true,
   }, 
   {
     name: 'Date Of Birth',
     selector: 'column5',
+    sortable: true,
   }, 
   {
     name: 'Street',
     selector: 'column6',
+    sortable: true,
   }, 
   {
     name: 'City',
     selector: 'column7',
+    sortable: true,
   }, 
   {
     name: 'State',
     selector: 'column8',
+    sortable: true,
   }, 
   {
     name: 'Zip Code',
     selector: 'column9',
+    sortable: true,
   },
 ];
 
 
 const list = new Array;
 
-if (employees == null) {
+if (employees == '' || employees == null || employees == undefined)  {
 
 list.push({
     column1: '',
@@ -90,7 +99,7 @@ for (var i = employees.length - 1; i >= 0; i--) {
    let current = employees[i];
 
     list.push({
-    column1: current.firstName,
+    column1: current.firstName, 
     column2: current.lastName,
     column3: current.startDate,
     column4: current.department,
@@ -104,21 +113,52 @@ for (var i = employees.length - 1; i >= 0; i--) {
 };
 
 }
+const FilterComponent = ({ filterText, onFilter, onClear }) => (
+  <>
+    <input
+      id="search"
+      type="text"
+      placeholder="Filter By Name"
+      aria-label="Search Input"
+      value={filterText}
+      onChange={onFilter}
+    />
+    
+  </>
+);
 
 
-const MyComponent = () => (
-  <ReactDataTable
-    columns={columns}
-    list={list}
-  />
-)
+const [filterText, setFilterText] = React.useState('');
+  const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false);
+  const filteredItems = columns.filter(
+    item => item.name && item.name.toLowerCase().includes(filterText.toLowerCase()),
+  );
+
+  const subHeaderComponentMemo = React.useMemo(() => {
+    const handleClear = () => {
+      if (filterText) {
+        setResetPaginationToggle(!resetPaginationToggle);
+        setFilterText('');
+      }
+    };
+
+    return (
+      <FilterComponent onFilter={e => setFilterText(e.target.value)} onClear={handleClear} filterText={filterText} />
+    );
+  }, [filterText, resetPaginationToggle]);
+
+
 
   return (
    <>
 
      <div id="employee-div" className="container">
             <h1>Current Employees</h1>
-            <MyComponent/>
+            <DataTable
+            columns={columns}
+            data={list}
+            pagination
+            />
             <a href="/">Home</a> <a href="#" onClick={Clear}> Clear</a>
         </div>
 
