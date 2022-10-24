@@ -95,7 +95,6 @@ list.push({
   },)}  else {
 
 for (var i = employees.length - 1; i >= 0; i--) {
-   console.log(employees[i])
    let current = employees[i];
 
     list.push({
@@ -127,11 +126,10 @@ const FilterComponent = ({ filterText, onFilter, onClear }) => (
   </>
 );
 
-
 const [filterText, setFilterText] = React.useState('');
   const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false);
-  const filteredItems = columns.filter(
-    item => item.name && item.name.toLowerCase().includes(filterText.toLowerCase()),
+  const filteredItems = list.filter(
+    item => item.column1 && item.column1.toLowerCase() && item.column2 && item.column2.toLowerCase() .includes(filterText.toLowerCase()),
   );
 
   const subHeaderComponentMemo = React.useMemo(() => {
@@ -147,17 +145,24 @@ const [filterText, setFilterText] = React.useState('');
     );
   }, [filterText, resetPaginationToggle]);
 
-
-
   return (
    <>
 
      <div id="employee-div" className="container">
             <h1>Current Employees</h1>
             <DataTable
-            columns={columns}
-            data={list}
-            pagination
+
+
+      title="Contact List"
+      columns={columns}
+      data={filteredItems}
+      pagination
+      paginationResetDefaultPage={resetPaginationToggle} // optionally, a hook to reset pagination to page 1
+      subHeader
+      subHeaderComponent={subHeaderComponentMemo}
+      selectableRows
+      persistTableHead
+
             />
             <a href="/">Home</a> <a href="#" onClick={Clear}> Clear</a>
         </div>

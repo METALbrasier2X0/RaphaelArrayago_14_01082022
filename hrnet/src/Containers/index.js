@@ -34,6 +34,13 @@ let employees = useSelector(selectToken);
     const state = document.getElementById('state');
     const zipCode = document.getElementById('zip-code');
 
+    if (firstName.value == "") { firstName.value =("N/A") };
+    if (lastName.value == "") { lastName.value =("N/A") };
+    if (department.value == "") { firstName.value =("N/A") };
+    if (street.value == "") { lastName.value =("N/A") };
+    if (city.value == "") { firstName.value =("N/A") };
+    if (state.value == "") { lastName.value =("N/A") };
+    if (zipCode.value == "") { firstName.value =("N/A") };
 
     const employee = {
         firstName: firstName.value,
@@ -96,7 +103,6 @@ const [birthDate, setBirthDate] = useState(new Date());
 
                     <label htmlFor="city">City</label>
                     <input id="city"></input>
-                    
                     <Dropdown> </Dropdown>
 
                     <label htmlFor="zip-code">Zip Code</label>
