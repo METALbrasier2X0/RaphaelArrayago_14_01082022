@@ -62,6 +62,11 @@ let employees = useSelector(selectToken);
     employees = JSON.parse(employees || []);
     employees.push(employee);
     }
+    
+     Array.from(document.querySelectorAll("input")).forEach(
+    input => (input.value = "")
+    );
+
     dispatch(storeToken(JSON.stringify(employees)));
     Open()
 }

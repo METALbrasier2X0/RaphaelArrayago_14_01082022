@@ -6,6 +6,12 @@ import { BrowserRouter, Routes, Route, Link, useHistory, useLocation, Redirect }
 import { useSelector, useDispatch } from 'react-redux'
 import { storeToken, clearToken, selectToken } from '../Sessions/userSession'
 
+import { CompactTable } from '@table-library/react-table-library/compact';
+import { useTheme } from '@table-library/react-table-library/theme';
+import { getTheme } from '@table-library/react-table-library/baseline';
+import { useSort } from '@table-library/react-table-library/sort';
+import { usePagination } from '@table-library/react-table-library/pagination';
+
 /**
  * Code to show the employee list
  * @return  {React element}             Containers that shows the list of employees  
@@ -19,151 +25,164 @@ function List() {
     const List = useSelector(selectToken);
     let employees = List;
 
+
       function Clear(){
 
       dispatch(clearToken());
-}     
+}
+
 
     if (employees == '') {
     } else {
     employees = JSON.parse(employees);
     }
-    const columns = [
-  {
-    name: 'First Name',
-    selector: 'column1',
-    sortable: true,
-  },
-  {
-    name: 'Last Name',
-    selector: 'column2',
-    sortable: true,
-  },
-  {
-    name: 'Start Date',
-    selector: 'column3',
-    sortable: true,
-  }, 
-  {
-    name: 'Department',
-    selector: 'column4',
-    sortable: true,
-  }, 
-  {
-    name: 'Date Of Birth',
-    selector: 'column5',
-    sortable: true,
-  }, 
-  {
-    name: 'Street',
-    selector: 'column6',
-    sortable: true,
-  }, 
-  {
-    name: 'City',
-    selector: 'column7',
-    sortable: true,
-  }, 
-  {
-    name: 'State',
-    selector: 'column8',
-    sortable: true,
-  }, 
-  {
-    name: 'Zip Code',
-    selector: 'column9',
-    sortable: true,
-  },
+
+
+const nodes = [
 ];
-
-
-const list = new Array;
 
 if (employees == '' || employees == null || employees == undefined)  {
 
-list.push({
-    column1: '',
-    column2: '',
-    column3: '',
-    column4: '',
-    column5: '',
-    column6: '',
-    column7: '',
-    column8: '',
-    column9: '',
+nodes.push({
+    firstName: '',
+    lastName: '',
+    startDate: '',
+    department: '',
+    dateOfBirth: '',
+    street: '',
+    city: '',
+    state: '',
+    zipCode: '',
 
   },)}  else {
 
 for (var i = employees.length - 1; i >= 0; i--) {
    let current = employees[i];
 
-    list.push({
-    column1: current.firstName, 
-    column2: current.lastName,
-    column3: current.startDate,
-    column4: current.department,
-    column5: current.dateOfBirth,
-    column6: current.street,
-    column7: current.city,
-    column8: current.state,
-    column9: current.zipCode,
+    nodes.push({
+    firstName: current.firstName, 
+    lastName: current.lastName,
+    startDate: current.startDate,
+    department: current.department,
+    dateOfBirth: current.dateOfBirth,
+    street: current.street,
+    city: current.city,
+    state: current.state,
+    zipCode: current.zipCode,
 
   },)
 };
 
 }
-const FilterComponent = ({ filterText, onFilter, onClear }) => (
-  <>
-    <input
-      id="search"
-      type="text"
-      placeholder="Filter By Name"
-      aria-label="Search Input"
-      value={filterText}
-      onChange={onFilter}
-    />
-    
-  </>
-);
+let data = { nodes };
+  const theme = useTheme(getTheme());
 
-const [filterText, setFilterText] = React.useState('');
-  const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false);
-  const filteredItems = list.filter(
-    item => item.column1 && item.column1.toLowerCase() && item.column2 && item.column2.toLowerCase() .includes(filterText.toLowerCase()),
+
+  const pagination = usePagination(data, {
+    state: {
+      page: 0,
+      size: 5,
+    },
+    onChange: onPaginationChange,
+  });
+
+  function onPaginationChange(action, state) {
+    console.log(action, state);
+  }
+
+
+    const sort = useSort(
+    data,
+    {
+      onChange: onSortChange,
+    },
+    {
+      sortFns: {
+        FIRSTNAME: (array) => array.sort((a, b) => a.firstName.localeCompare(b.firstName)),
+        LASTNAME: (array) => array.sort((a, b) => a.lastName.localeCompare(b.lastName)),
+        STARTDATE: (array) => array.sort((a, b) => a.startDate.localeCompare(b.startDate)),
+        DEPARTEMENT: (array) => array.sort((a, b) => a.department.localeCompare(b.department)),
+        LASTNAME: (array) => array.sort((a, b) => a.dateOfBirth.localeCompare(b.dateOfBirth)),
+        DATEOFBIRTH: (array) => array.sort((a, b) => a.street.localeCompare(b.street)),
+        CITY: (array) => array.sort((a, b) => a.city.localeCompare(b.city)),
+        STATE: (array) => array.sort((a, b) => a.state.localeCompare(b.state)),
+        ZIPCODE: (array) => array.sort((a, b) => a.zipCode.localeCompare(b.zipCode)),
+      },
+    },
   );
 
-  const subHeaderComponentMemo = React.useMemo(() => {
-    const handleClear = () => {
-      if (filterText) {
-        setResetPaginationToggle(!resetPaginationToggle);
-        setFilterText('');
-      }
-    };
+  function onSortChange(action, state) {
+    console.log(action, state);
+  }
 
-    return (
-      <FilterComponent onFilter={e => setFilterText(e.target.value)} onClear={handleClear} filterText={filterText} />
-    );
-  }, [filterText, resetPaginationToggle]);
+
+
+
+const COLUMNS = [
+  { label: 'First Name', renderCell: (item) => item.firstName , sort: { sortKey: 'FIRSTNAME' } },
+  { label: 'Last Name', renderCell: (item) => item.lastName , sort: { sortKey: 'LASTNAME' } },
+  { label: 'Start Date', renderCell: (item) => item.startDate  , sort: { sortKey: 'STARTDATE' } },
+  { label: 'Department', renderCell: (item) => item.department , sort: { sortKey: 'DEPARTEMENT' }  },
+  { label: 'Date Of Birth', renderCell: (item) => item.dateOfBirth , sort: { sortKey: 'LASTNAME' }   },
+  { label: 'Street', renderCell: (item) => item.street  , sort: { sortKey: 'DATEOFBIRTH' }  },
+  { label: 'City', renderCell: (item) => item.city , sort: { sortKey: 'CITY' }  },
+  { label: 'State', renderCell: (item) => item.state , sort: { sortKey: 'STATE' }  },
+  { label: 'ZipCode', renderCell: (item) => item.zipCode , sort: { sortKey: 'ZIPCODE' }  }
+];
+
+
+  const [search, setSearch] = React.useState('');
+
+  const handleSearch = (event) => {
+    setSearch(event.target.value);
+  };
+
+  data = {
+     nodes: data.nodes.filter((item) =>  item.firstName.toLowerCase().includes(search.toLowerCase()) || item.lastName.toLowerCase().includes(search.toLowerCase())
+      || item.startDate.toLowerCase().includes(search.toLowerCase()) || item.department.toLowerCase().includes(search.toLowerCase())
+      || item.dateOfBirth.toLowerCase().includes(search.toLowerCase()) || item.state.toLowerCase().includes(search.toLowerCase())
+      || item.street.toLowerCase().includes(search.toLowerCase()) || item.city.toLowerCase().includes(search.toLowerCase())
+      || item.zipCode.toLowerCase().includes(search.toLowerCase())),
+  };
+
 
   return (
    <>
 
      <div id="employee-div" className="container">
             <h1>Current Employees</h1>
-            <DataTable
+
+              <label htmlFor="search">
+        Search by Name:&nbsp;
+        <input id="search" type="text" value={search} onChange={handleSearch} />
+      </label>
+      <br />
+            
+            <CompactTable columns={COLUMNS} data={data} theme={theme} pagination={pagination} sort={sort}  />
+            <br />
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <span>Total Pages: {pagination.state.getTotalPages(data.nodes)}</span>
+
+        <span>
+          Page:{' '}
+          {pagination.state.getPages(data.nodes).map((_, index) => (
+            <button
+              key={index}
+              type="button"
+              style={{
+                fontWeight: pagination.state.page === index ? 'bold' : 'normal',
+              }}
+              onClick={() => pagination.fns.onSetPage(index)}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </span>
+      </div>
+
+      <br />
 
 
-      title="Contact List"
-      columns={columns}
-      data={filteredItems}
-      pagination
-      paginationResetDefaultPage={resetPaginationToggle} // optionally, a hook to reset pagination to page 1
-      subHeader
-      subHeaderComponent={subHeaderComponentMemo}
-      selectableRows
-      persistTableHead
-
-            />
             <a href="/">Home</a> <a href="#" onClick={Clear}> Clear</a>
         </div>
 
@@ -171,5 +190,6 @@ const [filterText, setFilterText] = React.useState('');
 
   );
 }
+
 
 export default List;

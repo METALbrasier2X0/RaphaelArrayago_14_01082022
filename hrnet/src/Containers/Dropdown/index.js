@@ -265,7 +265,7 @@ const states = [
      <select name="state" id="state">
                     {
     states.map(function(state) {
-        return  <> <option> {state.name} </option> </>
+        return <option key={state.name}> {state.name} </option> 
     })}
      </select>
    </>
