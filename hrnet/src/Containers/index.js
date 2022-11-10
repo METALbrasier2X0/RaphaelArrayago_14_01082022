@@ -20,8 +20,8 @@ import { storeToken, clearToken,  selectToken  } from './Sessions/userSession'
 function Home() {
 const dispatch = useDispatch()
 let employees = useSelector(selectToken);
-
-
+    
+    /*function to parse and send the employee data to redux*/
 
  function SaveEmployee(){
     const firstName = document.getElementById('first-name');

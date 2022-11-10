@@ -25,12 +25,12 @@ function List() {
     const List = useSelector(selectToken);
     let employees = List;
 
-
       function Clear(){
 
       dispatch(clearToken());
 }
 
+/*  fetches and formats the data form redux to the table*/
 
     if (employees == '') {
     } else {
@@ -44,6 +44,7 @@ const nodes = [
 if (employees == '' || employees == null || employees == undefined)  {
 
 nodes.push({
+    key:'',
     firstName: '',
     lastName: '',
     startDate: '',
@@ -60,6 +61,7 @@ for (var i = employees.length - 1; i >= 0; i--) {
    let current = employees[i];
 
     nodes.push({
+    key : i ,
     firstName: current.firstName, 
     lastName: current.lastName,
     startDate: current.startDate,
@@ -75,13 +77,14 @@ for (var i = employees.length - 1; i >= 0; i--) {
 
 }
 let data = { nodes };
+
+/*configuration for the table*/
+
   const theme = useTheme(getTheme());
-
-
   const pagination = usePagination(data, {
     state: {
       page: 0,
-      size: 5,
+      size: 10,
     },
     onChange: onPaginationChange,
   });
@@ -90,6 +93,7 @@ let data = { nodes };
     console.log(action, state);
   }
 
+    const sizes = [10, 25, 50, 100];
 
     const sort = useSort(
     data,
@@ -114,8 +118,6 @@ let data = { nodes };
   function onSortChange(action, state) {
     console.log(action, state);
   }
-
-
 
 
 const COLUMNS = [
@@ -152,39 +154,93 @@ const COLUMNS = [
      <div id="employee-div" className="container">
             <h1>Current Employees</h1>
 
+            <div className="list-header">
+                     <span> Show&nbsp; 
+                    <select>
+            Page Size:{' '}
+            {sizes.map((size) => (
+              <option
+                key={size}
+                type="option"
+                style={{
+                  fontWeight: pagination.state.size === size ? 'bold' : 'normal',
+                }}
+                onClick={() => pagination.fns.onSetSize(size)}
+              >
+                {size}
+              </option>
+            ))}
+            <option
+              type="option"
+              style={{
+                fontWeight: pagination.state.size === nodes.length ? 'bold' : 'normal',
+              }}
+              onClick={() => pagination.fns.onSetSize(nodes.length)}
+            >
+              All
+            </option>
+             </select>
+              &nbsp;entries
+          </span>
+
+
+
               <label htmlFor="search">
         Search by Name:&nbsp;
         <input id="search" type="text" value={search} onChange={handleSearch} />
       </label>
+      </div>
       <br />
             
             <CompactTable columns={COLUMNS} data={data} theme={theme} pagination={pagination} sort={sort}  />
             <br />
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <span>Total Pages: {pagination.state.getTotalPages(data.nodes)}</span>
-
-        <span>
-          Page:{' '}
-          {pagination.state.getPages(data.nodes).map((_, index) => (
+                    <div className='list-browse' style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <span>
+            Showing {pagination.state.getPageBoundaries(data.nodes).start}
+            {' to '}
+            {pagination.state.getPageBoundaries(data.nodes).end}
+            {' of '}
+            {data.nodes.length}{' entries'}
+            </span>
+            <span>
             <button
-              key={index}
               type="button"
-              style={{
-                fontWeight: pagination.state.page === index ? 'bold' : 'normal',
-              }}
-              onClick={() => pagination.fns.onSetPage(index)}
+              disabled={pagination.state.page === 0}
+              onClick={() => pagination.fns.onSetPage(0)}
             >
-              {index + 1}
+              {'|<'}
             </button>
-          ))}
-        </span>
-      </div>
+            <button
+              type="button"
+              disabled={pagination.state.page === 0}
+              onClick={() => pagination.fns.onSetPage(pagination.state.page - 1)}
+            >
+              {'<'}
+            </button>
+            <button
+              type="button"
+              disabled={pagination.state.page + 1 === pagination.state.getTotalPages(data.nodes)}
+              onClick={() => pagination.fns.onSetPage(pagination.state.page + 1)}
+            >
+              {'>'}
+            </button>
+            <button
+              type="button"
+              disabled={pagination.state.page + 1 === pagination.state.getTotalPages(data.nodes)}
+              onClick={() =>
+                pagination.fns.onSetPage(pagination.state.getTotalPages(data.nodes) - 1)
+              }
+            >
+              {'>|'}
+            </button>
+          </span>
+        </div>
 
       <br />
 
 
-            <a href="/">Home</a> <a href="#" onClick={Clear}> Clear</a>
-        </div>
+           <span> <a href="/">Home</a> - <a href="#" onClick={Clear}> Clear</a> </span>
+         </div>
 
    </>
 
